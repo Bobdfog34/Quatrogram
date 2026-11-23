@@ -1,0 +1,88 @@
+name: Import Telegram source + Quatrogram patches
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: 'Telegram Android upstream ref'
+        required: false
+        default: 'master'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quatrogram-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      UPSTREAM_REPO: https://github.com/TelegramMessenger/Telegram-Android.git
+      PATCH_REPO: https://github.com/iamxvbaba/gramsrv-telegram.git
+      APP_VERSION_NAME: '13.3.1'
+      APP_VERSION_CODE: '7310'
+      APP_DISPLAY_NAME: ${{ vars.APP_DISPLAY_NAME || 'Quatrogram' }}
+      SERVER_HOST: ${{ vars.SERVER_HOST || '10.172.61.102' }}
+      SERVER_PORT: ${{ vars.SERVER_PORT || '2398' }}
+      DC_ID: ${{ vars.DC_ID || '2' }}
+      LINK_DOMAIN: ${{ vars.LINK_DOMAIN || 'telesrv.net' }}
+      SERVER_RSA_FINGERPRINT: ${{ vars.SERVER_RSA_FINGERPRINT || '0x9dbe5a4c45febeff' }}
+    steps:
+      - name: Checkout repository config
+        uses: actions/checkout@v4
+        with:
+          path: config
+          fetch-depth: 1
+
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL 2>/dev/null || true
+
+      - name: Clone upstream Telegram Android with submodules
+        run: |
+          git clone --recursive --shallow-submodules --depth 1 -b "$UPSTREAM_REF" "$UPSTREAM_REPO" src
+          cd src
+          git config user.name "quatrogram-bot"
+          git config user.email "quatrogram-bot@users.noreply.github.com"
+          echo "Upstream HEAD: $(git rev-parse HEAD)"
+
+      - name: Fetch gramsrv patch commits
+        run: |
+          cd src
+          git remote add patches "$PATCH_REPO"
+          git fetch --no-tags --depth=100 patches master
+          git cat-file -e 0ea1e403312c86f6814e1508b447e13e66dbeefb^{commit}
+          git cat-file -e ac170f3b221f8520573e3edd3965a80512245447^{commit}
+
+      - name: Apply gramsrv patches
+        run: |
+          cd src
+          for SHA in 0ea1e403312c86f6814e1508b447e13e66dbeefb ac170f3b221f8520573e3edd3965a80512245447; do
+            echo "Cherry-picking $SHA"
+            git cherry-pick -X theirs --no-commit "$SHA" || true
+            if git diff --name-only --diff-filter=U | grep -q .; then
+              echo "Resolving remaining conflicts in favor of the gramsrv patch"
+              git diff --name-only --diff-filter=U
+              git checkout --theirs .
+            fi
+            git add -A
+            git commit -m "Apply gramsrv patch $SHA" || echo "Nothing to commit for $SHA"
+          done
+
+      - name: Finalize source (version, branding, server lock)
+        run: python3 config/.github/scripts/finalize.py
+
+      - name: Restore repository config files
+        run: |
+          cp -R config/.github src/.github
+          cp config/README.md src/README.md
+
+      - name: Commit and push source to master
+        run: |
+          cd src
+          git add -A
+          git commit -m "Quatrogram: Telegram $APP_VERSION_NAME source for gramsrv" || echo "No source changes to commit"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
