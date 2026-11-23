@@ -115,7 +115,14 @@ def patch_java_literals(text):
                 break
             literal.append(text[j])
             j += 1
-        out.append(apply_pairs(''.join(literal)))
+        literal_text = ''.join(literal)
+        # Resource-name literals used by LocaleController.formatString
+        # must stay in sync with R.string.<name>; they are not UI text.
+        if (re.fullmatch(r'"[A-Za-z][A-Za-z0-9_]*"', literal_text)
+                and re.match(r'\s*,\s*R\.string\.', text[j:])):
+            out.append(literal_text)
+        else:
+            out.append(apply_pairs(literal_text))
         i = j
     return ''.join(out)
 
@@ -155,6 +162,20 @@ for pattern in ('TMessagesProj*/src/**/*.java', 'TMessagesProj*/src/**/*.kt',
             write(f, s2)
             code_files += 1
 print('branding: literals updated in', code_files, 'code/xml files')
+
+# Older branding passes rewrote the R.string identifier itself.
+# Restore it: the resource value is already branded, its name is internal.
+for pattern in ('TMessagesProj*/src/**/*.java', 'TMessagesProj*/src/**/*.kt'):
+    for f in ROOT.glob(pattern):
+        if not f.is_file():
+            continue
+        try:
+            s = read(f)
+        except UnicodeDecodeError:
+            continue
+        s2 = s.replace('R.string.QuatrogramVersion', 'R.string.TelegramVersion')
+        if s2 != s:
+            write(f, s2)
 
 # 3. Center the app name in the action bar ---------------------------------
 ab = ROOT / 'TMessagesProj/src/main/java/org/telegram/ui/ActionBar/ActionBar.java'

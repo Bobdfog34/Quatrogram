@@ -1422,6 +1422,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
     ArrayList<BotButton> botButtons = new ArrayList<>();
     private ChatMessageBotButtons botKeyboard;
+    private HashMap<String, BotButton> botButtonsByData = new HashMap<>();
+    private HashMap<String, BotButton> botButtonsByPosition = new HashMap<>();
+    private String botButtonsLayout;
     int widthForButtons;
     private boolean drawStartBotTopic;
     private boolean drawContinueBotTopic;
@@ -10092,6 +10095,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
             botButtons.clear();
+            botButtonsByData.clear();
+            botButtonsByPosition.clear();
+            botButtonsLayout = null;
             if (messageIdChanged && botKeyboard != null) {
                 botKeyboard.buttonsByData.clear();
                 botKeyboard.buttonsByPosition.clear();

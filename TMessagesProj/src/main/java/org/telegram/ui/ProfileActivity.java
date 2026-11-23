@@ -10923,7 +10923,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         hasBalance = userId != 0 && (imageUpdater == null || myProfile);
         if (hasBalance) {
             if (userInfo == null) {
-                userInfo = new TLRPC.UserFull();
+                userInfo = new TLRPC.TL_userFull();
             }
             if (userInfo.wallet_card == null) {
                 userInfo.wallet_card = new TL_wallet.card();
