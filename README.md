@@ -1,34 +1,56 @@
 # Quatrogram
 
-Telegram-compatible Android client for a self-hosted [gramsrv](https://github.com/iamxvbaba/gramsrv) server.
+MTProto-клиент для self-hosted сервера gramsrv.
 
-- **Declared app version:** 13.3.1
-- **Upstream source baseline:** Telegram Android 13.2.2 (7303) — the newest source currently published in `TelegramMessenger/Telegram-Android`. Version 13.3.1 is set in `gradle.properties` because no public 13.3.1 source tree exists yet.
-- **Server:** baked into the APK at build time. The client cannot switch datacenters or use Telegram's official network.
-- **Build:** GitHub Actions. No local Android SDK required.
+- **Версия в приложении:** `13.3.1` (код `7310`)
+- **База исходников:** официальный Android-клиент `13.2.2`, патчи gramsrv и локальные правки Quatrogram
+- **Сервер:** вшит в APK, переключение датацентров отключено
+- **Публичный домен ссылок:** `quatrogram.net`
+- **APK:** [Quatrogram-13.3.1.apk](https://github.com/Bobdfog34/Quatrogram/releases/download/v13.3.1/Quatrogram-13.3.1.apk)
 
-## Workflows
+## Что включено
 
-| Workflow | What it does |
-|---|---|
-| `Import Telegram source + Quatrogram patches` | Clones upstream Telegram Android with submodules, cherry-picks the gramsrv patches, applies the Quatrogram server lock / version / branding, and pushes the result to `master`. |
-| `Build Quatrogram APK` | Builds `:TMessagesProj_App:assembleAfatRelease` and uploads the APK as an artifact. |
+- брендинг Quatrogram без упоминаний стороннего бренда в интерфейсе;
+- заголовок приложения по центру;
+- кошельки, балансы Gram и Stars включены для всех пользователей;
+- код подключения и RSA-ключ сервера зашиты в сборку;
+- бот регистрации с уникальными номерами и кодами.
 
-## Configuration
+## Бот регистрации
 
-Set these as repository **Variables** (Settings → Secrets and variables → Actions → Variables), then re-run the import workflow:
+Бот выдаёт пользователю персональный номер и 5-значный код, проверяет регистрацию по ID и юзернейму и отправляет администратору отчёт с ID пользователя и номером.
 
-| Variable | Default | Meaning |
-|---|---|---|
-| `SERVER_HOST` | `10.172.61.102` | MTProto host baked into the APK |
-| `SERVER_PORT` | `2398` | MTProto port |
-| `DC_ID` | `2` | Datacenter ID |
-| `LINK_DOMAIN` | `quatrogram.net` | Domain used for public links |
-| `SERVER_RSA_FINGERPRINT` | `0x9dbe5a4c45febeff` | Fingerprint of the bundled RSA key |
-| `APP_DISPLAY_NAME` | `Quatrogram` | App label |
+Команды: `/number`, `/code`, `/status`, `/find @username`, `/confirm @username`.
 
-The RSA public key itself lives in `.github/config/server-rsa.pub`. Replace it together with `SERVER_RSA_FINGERPRINT` when using your own gramsrv identity.
+Администратор: `@VUral_Gaisin`.
 
-## License
+Для GitHub Actions нужны секреты:
 
-Based on Telegram Android (GPL-2.0-or-later) and gramsrv patches (GPL-2.0). Keep this repository public to comply with the licences. This project is unofficial and is not affiliated with Telegram.
+- `BOT_TOKEN` — токен бота;
+- `ADMIN_USERNAMES` — `VUral_Gaisin`;
+- `ADMIN_CHAT_IDS` — числовой чат администратора, если известен;
+- `DATABASE_URL` — PostgreSQL, если используется общая БД с сервером.
+
+Без `DATABASE_URL` бот использует SQLite и кэширует состояние в GitHub Actions.
+
+## Сборка
+
+Основной экшен: `.github/workflows/build.yml`.
+
+```bash
+./gradlew :TMessagesProj_App:assembleAfatRelease --stacktrace --no-daemon
+```
+
+Импорт и наложение правок: `.github/workflows/import.yml` и `.github/scripts/finalize.py`.
+
+## Интеграция с сервером
+
+Патч gramsrv описан в [docs/GRAMSVR_REGISTRATION_PATCH.md](docs/GRAMSVR_REGISTRATION_PATCH.md). Redis остаётся авторитетным хранилищем кодов; выданный ботом код подставляется только на выдаче, а успешная регистрация отмечается в отдельной таблице.
+
+## Плагины
+
+Дизайн безопасной системы плагинов описан в [docs/QUATROGRAM_PLUGIN_SYSTEM.md](docs/QUATROGRAM_PLUGIN_SYSTEM.md). Используются декларативные `.qplugin`-манифесты без выполнения произвольного кода.
+
+## Лицензия
+
+Основано на исходном коде MTProto-клиента и патчах gramsrv под GPL-2.0-or-later. Проект не аффилирован со сторонними сервисами.

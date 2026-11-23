@@ -3,6 +3,12 @@ name: Build Quatrogram APK
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - 'bot/**'
+      - 'docs/**'
+      - '.github/workflows/bot.yml'
+      - '.github/workflows/build.yml'
+      - 'README.md'
   workflow_dispatch:
 
 permissions:
