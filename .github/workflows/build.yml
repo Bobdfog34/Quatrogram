@@ -3,12 +3,6 @@ name: Build Quatrogram APK
 on:
   push:
     branches: [master]
-    paths-ignore:
-      - 'bot/**'
-      - 'docs/**'
-      - '.github/workflows/bot.yml'
-      - '.github/workflows/build.yml'
-      - 'README.md'
   workflow_dispatch:
 
 permissions:
@@ -52,6 +46,11 @@ jobs:
 
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
+
+      - name: Final branding cleanup (Telegram -> Quatrogram)
+        run: python3 .github/scripts/final_branding.py
+        env:
+          APP_DISPLAY_NAME: Quatrogram
 
       - name: Build release APK
         run: ./gradlew :TMessagesProj_App:assembleAfatRelease --stacktrace --no-daemon
