@@ -1,4 +1,4 @@
-﻿package org.telegram.ui;
+ackage org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.replaceSingleTag;
