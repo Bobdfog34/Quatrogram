@@ -1,10 +1,11 @@
 package org.telegram.ui;
 
-import android.os.Bundle;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -13,6 +14,9 @@ import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.LayoutHelper;
 
 public class ClientSettingsActivity extends BaseFragment {
+
+    private static final String PREFS = "litgram";
+    private static final String KEY_NFT_BUBBLES = "nftBubbles";
 
     private TextCheckCell nftGiftsCell;
 
@@ -45,14 +49,15 @@ public class ClientSettingsActivity extends BaseFragment {
 
         nftGiftsCell = new TextCheckCell(getParentActivity());
         nftGiftsCell.setTextAndValue(LocaleController.getString(R.string.ClientSettingsNFTGifts), LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false);
-        nftGiftsCell.setChecked(false);
+        nftGiftsCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NFT_BUBBLES, true));
         nftGiftsCell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 nftGiftsCell.setChecked(!nftGiftsCell.isChecked());
+                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_NFT_BUBBLES, nftGiftsCell.isChecked()).apply();
             }
         });
-        ((LinearLayout) fragmentView).addView(nftGiftsCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+        ((LinearLayout) fragmentView).addView(nftGiftsCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
 
         TextInfoPrivacyCell infoCell = new TextInfoPrivacyCell(getParentActivity());
         infoCell.setText(LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false);
