@@ -13,19 +13,14 @@ ROOT = Path('.')
 APP_NAME = os.environ.get('APP_DISPLAY_NAME', 'Quatrogram')
 
 PAIRS = [
-    ('telegram.org', 'litgram.net'),
-    ('Telegram.org', 'Litgram.net'),
-    ('telegram.me', 'litgram.net'),
-    ('telegram.dog', 'litgram.net'),
-    ('quatrogram.net', 'litgram.net'),
-    ('Quatrogram.net', 'Litgram.net'),
-    ('t.me', 'litgram.net'),
-    ('telesrv.net', 'litgram.net'),
+    ('telegram.org', 'quatrogram.net'),
+    ('Telegram.org', 'Quatrogram.net'),
+    ('telegram.me', 'quatrogram.net'),
+    ('telegram.dog', 'quatrogram.net'),
+    ('t.me', 'quatrogram.net'),
+    ('telesrv.net', 'quatrogram.net'),
     ('Telesrv', APP_NAME),
     ('telesrv', APP_NAME.lower()),
-    ('QUATROGRAM', APP_NAME.upper()),
-    ('Quatrogram', APP_NAME),
-    ('quatrogram', APP_NAME.lower()),
     ('TELEGRAM', APP_NAME.upper()),
     ('Telegram', APP_NAME),
     ('telegram', APP_NAME.lower()),
@@ -88,7 +83,7 @@ def patch_java_literals(path):
             literal.append(text[j])
             j += 1
         literal_text = ''.join(literal)
-        # Resource-name literals used by LocaleController.formatString — не UI.
+        # Resource-name literals used by LocaleController.formatString - not UI.
         if re.fullmatch(r'"[A-Za-z][A-Za-z0-9_]*"', literal_text) and re.match(r'\s*,\s*R\.string\.', text[j:]):
             out.append(literal_text)
         else:
