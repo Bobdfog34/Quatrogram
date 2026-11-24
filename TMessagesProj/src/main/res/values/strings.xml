@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="AppName">Quatrogram</string>
     <string name="AppNameBeta">Quatrogram Beta</string>
@@ -10632,6 +10632,8 @@
     <string name="SettingsAccount">Account</string>
     <string name="SettingsAccounts">Accounts</string>
     <string name="SettingsAccountInfo">Number, Username, Bio</string>
+    <string name="ClientSettings">Client Settings</string>
+    <string name="ClientSettingsInfo">NFT gifts, appearance, behavior</string>
     <string name="SettingsChat">Chat Settings</string>
     <string name="SettingsChatInfo">Wallpaper, Night Mode, Animations</string>
     <string name="SettingsPrivacySecurity">Privacy &amp; Security</string>
@@ -11679,4 +11681,7 @@
     <string name="FpnvConsentSimSlot">SIM Slot</string>
     <string name="FpnvConsentSimSlotValue">SIM %1$d</string>
     <string name="FpnvConsentPhoneNumber">Phone Number</string>
+    <string name="ClientSettingsNFTGifts">Show NFT gifts in profile bubbles</string>
+    <string name="ClientSettingsNFTGiftsInfo">Display NFT gifts as animated bubbles in user profiles. Turn off for classic profile view.</string>
 </resources>
+
