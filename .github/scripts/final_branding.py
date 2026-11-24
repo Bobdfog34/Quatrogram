@@ -9,18 +9,23 @@ import os
 import re
 from pathlib import Path
 
-ROOT = Path('src')
+ROOT = Path('.')
 APP_NAME = os.environ.get('APP_DISPLAY_NAME', 'Quatrogram')
 
 PAIRS = [
-    ('telegram.org', 'quatrogram.net'),
-    ('Telegram.org', 'Quatrogram.net'),
-    ('telegram.me', 'quatrogram.net'),
-    ('telegram.dog', 'quatrogram.net'),
-    ('t.me', 'quatrogram.net'),
-    ('telesrv.net', 'quatrogram.net'),
+    ('telegram.org', 'litgram.net'),
+    ('Telegram.org', 'Litgram.net'),
+    ('telegram.me', 'litgram.net'),
+    ('telegram.dog', 'litgram.net'),
+    ('quatrogram.net', 'litgram.net'),
+    ('Quatrogram.net', 'Litgram.net'),
+    ('t.me', 'litgram.net'),
+    ('telesrv.net', 'litgram.net'),
     ('Telesrv', APP_NAME),
     ('telesrv', APP_NAME.lower()),
+    ('QUATROGRAM', APP_NAME.upper()),
+    ('Quatrogram', APP_NAME),
+    ('quatrogram', APP_NAME.lower()),
     ('TELEGRAM', APP_NAME.upper()),
     ('Telegram', APP_NAME),
     ('telegram', APP_NAME.lower()),
