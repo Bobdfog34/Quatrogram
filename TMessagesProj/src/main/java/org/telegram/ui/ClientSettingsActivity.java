@@ -1,4 +1,4 @@
-ackage org.telegram.ui;
+package org.telegram.ui;
 
 import android.os.Bundle;
 import android.view.View;
