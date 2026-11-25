@@ -32,7 +32,7 @@ for rel, values in VALUES.items():
     for name, value in values.items():
         pattern = re.compile(r'(<string name="' + re.escape(name) + r'">)(.*?)(</string>)', re.S)
         if pattern.search(text):
-            text = pattern.sub(lambda m: m.group(1) + value + m.group(2), text, count=1)
+            text = pattern.sub(lambda m: m.group(1) + value + m.group(3), text, count=1)
         else:
             text = text.replace("</resources>", '    <string name="%s">%s</string>\n</resources>' % (name, value))
     path.write_text(text, encoding="utf-8")
