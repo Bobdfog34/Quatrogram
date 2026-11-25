@@ -59,7 +59,7 @@ jobs:
         run: python3 -c "import xml.etree.ElementTree as ET, pathlib; files=list(pathlib.Path('.').glob('TMessagesProj*/src/main/res/values*/*.xml')); [ET.parse(p) for p in files]; print('Validated', len(files), 'resource XML files')"
 
       - name: Build release APK
-        run: ./gradlew :TMessagesProj_App:assembleAfatRelease --stacktrace --no-daemon
+        run: ./gradlew :TMessagesProj_App:assembleArm64Release --stacktrace --no-daemon
         env:
           GRADLE_OPTS: '-Xmx6g'
 
