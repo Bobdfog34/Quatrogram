@@ -57,40 +57,21 @@ def patch_strings_xml(path):
         print(f'patched strings: {path}')
 
 
+STRING_LITERAL = re.compile(r'"(?:\\.|[^"\\])*"')
+
+
 def patch_java_literals(path):
     text = path.read_text(encoding='utf-8')
     original = text
 
-    out = []
-    i = 0
-    n = len(text)
-    while i < n:
-        if text[i] != '"':
-            out.append(text[i])
-            i += 1
-            continue
-        j = i + 1
-        literal = ['"']
-        while j < n:
-            if text[j] == '\\' and j + 1 < n:
-                literal.append(text[j:j + 2])
-                j += 2
-                continue
-            if text[j] == '"':
-                literal.append('"')
-                j += 1
-                break
-            literal.append(text[j])
-            j += 1
-        literal_text = ''.join(literal)
+    def repl(m):
+        literal = m.group(0)
         # Resource-name literals used by LocaleController.formatString - not UI.
-        if re.fullmatch(r'"[A-Za-z][A-Za-z0-9_]*"', literal_text) and re.match(r'\s*,\s*R\.string\.', text[j:]):
-            out.append(literal_text)
-        else:
-            out.append(brand_value(literal_text))
-        i = j
+        if re.fullmatch(r'"[A-Za-z][A-Za-z0-9_]*"', literal) and re.match(r'\s*,\s*R\.string\.', text[m.end():]):
+            return literal
+        return brand_value(literal)
 
-    new_text = ''.join(out)
+    new_text = STRING_LITERAL.sub(repl, text)
     if new_text != original:
         path.write_text(new_text, encoding='utf-8')
         print(f'patched literals: {path}')

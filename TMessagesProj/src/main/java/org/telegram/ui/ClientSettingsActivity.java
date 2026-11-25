@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Cells.TextCheckCell;
@@ -31,7 +32,7 @@ public class ClientSettingsActivity extends BaseFragment {
     }
 
     @Override
-    public ViewGroup onCreateView(ViewGroup parent) {
+    public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString(R.string.ClientSettings));
@@ -44,10 +45,10 @@ public class ClientSettingsActivity extends BaseFragment {
             }
         });
 
-        fragmentView = new LinearLayout(getParentActivity());
+        fragmentView = new LinearLayout(context);
         ((LinearLayout) fragmentView).setOrientation(LinearLayout.VERTICAL);
 
-        nftGiftsCell = new TextCheckCell(getParentActivity());
+        nftGiftsCell = new TextCheckCell(context);
         nftGiftsCell.setTextAndValue(LocaleController.getString(R.string.ClientSettingsNFTGifts), LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false);
         nftGiftsCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NFT_BUBBLES, true));
         nftGiftsCell.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +60,7 @@ public class ClientSettingsActivity extends BaseFragment {
         });
         ((LinearLayout) fragmentView).addView(nftGiftsCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
 
-        TextInfoPrivacyCell infoCell = new TextInfoPrivacyCell(getParentActivity());
+        TextInfoPrivacyCell infoCell = new TextInfoPrivacyCell(context);
         infoCell.setText(LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false);
         ((LinearLayout) fragmentView).addView(infoCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 20, 0, 0));
 
