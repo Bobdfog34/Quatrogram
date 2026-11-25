@@ -15,7 +15,7 @@ import org.telegram.ui.Components.LayoutHelper;
 
 public class ClientSettingsActivity extends BaseFragment {
 
-    private static final String PREFS = "litgram";
+    private static final String PREFS = "quatrogram";
     private static final String KEY_NFT_BUBBLES = "nftBubbles";
 
     private TextCheckCell nftGiftsCell;
