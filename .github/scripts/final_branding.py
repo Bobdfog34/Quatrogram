@@ -57,7 +57,7 @@ def patch_strings_xml(path):
         print(f'patched strings: {path}')
 
 
-STRING_LITERAL = re.compile(r'"(?:\\.|[^"\\])*"')
+STRING_LITERAL = re.compile(r'"(?:\\.|[^"\\\n])*"')
 
 
 def patch_java_literals(path):
