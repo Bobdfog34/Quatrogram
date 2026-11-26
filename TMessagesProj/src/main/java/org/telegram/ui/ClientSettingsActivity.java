@@ -49,7 +49,7 @@ public class ClientSettingsActivity extends BaseFragment {
         ((LinearLayout) fragmentView).setOrientation(LinearLayout.VERTICAL);
 
         nftGiftsCell = new TextCheckCell(context);
-        nftGiftsCell.setTextAndValue(LocaleController.getString(R.string.ClientSettingsNFTGifts), LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false);
+        nftGiftsCell.setTextAndValue(LocaleController.getString(R.string.ClientSettingsNFTGifts), LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false, false);
         nftGiftsCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NFT_BUBBLES, true));
         nftGiftsCell.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +61,7 @@ public class ClientSettingsActivity extends BaseFragment {
         ((LinearLayout) fragmentView).addView(nftGiftsCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
 
         TextInfoPrivacyCell infoCell = new TextInfoPrivacyCell(context);
-        infoCell.setText(LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false);
+        infoCell.setText(LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo));
         ((LinearLayout) fragmentView).addView(infoCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 20, 0, 0));
 
         return fragmentView;
