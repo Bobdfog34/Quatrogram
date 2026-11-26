@@ -29,7 +29,7 @@ jobs:
       SERVER_PORT: ${{ vars.SERVER_PORT || '2398' }}
       DC_ID: ${{ vars.DC_ID || '2' }}
       LINK_DOMAIN: ${{ vars.LINK_DOMAIN || 'quatrogram.net' }}
-      SERVER_RSA_FINGERPRINT: ${{ vars.SERVER_RSA_FINGERPRINT || '0x30a7ab83e9a5b876' }}
+      SERVER_RSA_FINGERPRINT: ${{ vars.SERVER_RSA_FINGERPRINT || '0xc37f20620ef9f5ac' }}
     steps:
       - name: Checkout repository config
         uses: actions/checkout@v4

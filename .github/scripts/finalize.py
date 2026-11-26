@@ -18,7 +18,7 @@ HOST = os.environ.get('SERVER_HOST', '89.169.12.230')
 PORT = os.environ.get('SERVER_PORT', '2398')
 DC_ID = os.environ.get('DC_ID', '2')
 DOMAIN = os.environ.get('LINK_DOMAIN', 'quatrogram.net')
-FINGERPRINT = os.environ.get('SERVER_RSA_FINGERPRINT', '0x30a7ab83e9a5b876')
+FINGERPRINT = os.environ.get('SERVER_RSA_FINGERPRINT', '0xc37f20620ef9f5ac')
 KEY_FILE = CONFIG / 'config' / 'server-rsa.pub'
 
 

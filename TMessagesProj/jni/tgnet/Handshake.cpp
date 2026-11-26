@@ -370,7 +370,7 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
         } else {
             if (serverPublicKeys.empty()) {
                 serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEAzEMxveJVqyVM4L6dzyFMEviT9cWhUTQ71uH1Z6ZzMajIk6c1pAV4\n8VYWG4hPfROlTFnDf6cFuqpFF6shVzrXf5AsZNj8P72hcMnVCKmoBOo5IZxRSg4a\n2srLB0m1vlEzRFF1yZvn54zdiadsj4qMGfcuFUgGetxmzSBqchtbymJCtqxR9N4S\n83ZjIFRnvJ82mmo8eZhCIEwSKLvLTaL7bTVGOGqchAPLA5qlvY0IImNursImv1vL\n4C0Rltv3je8VmGr6ZpIAgibDxw3JMQJf9dywYQfXikgMOP7yrruqt2oHm2Rgi0gQ\nOYSpYl3Vq9q6WnxiNI7+cbdqqXVvNjtgSwIDAQAB\n-----END RSA PUBLIC KEY-----");
-                serverPublicKeysFingerprints.push_back(0x30a7ab83e9a5b876);
+                serverPublicKeysFingerprints.push_back(0xc37f20620ef9f5ac);
             }
 
             size_t count2 = serverPublicKeysFingerprints.size();
