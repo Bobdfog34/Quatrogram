@@ -54,6 +54,7 @@ private:
     ByteArray *handshakeAuthKey = nullptr;
     TL_future_salt *handshakeServerSalt = nullptr;
     int32_t timeDifference = 0;
+    int32_t handshakeRetries = 0;
     ByteArray *authKeyTempPending = nullptr;
     int64_t authKeyTempPendingId = 0;
     int32_t authKeyPendingRequestId = 0;

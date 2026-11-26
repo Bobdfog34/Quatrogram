@@ -46,7 +46,13 @@ Handshake::~Handshake() {
 }
 
 void Handshake::beginHandshake(bool reconnect) {
-    if (LOGS_ENABLED) DEBUG_D("account%u dc%u handshake: begin, type = %d", currentDatacenter->instanceNum, currentDatacenter->datacenterId, handshakeType);
+    if (handshakeRetries >= 8) {
+        if (LOGS_ENABLED) DEBUG_E("account%u dc%u handshake: too many retries, aborting handshake loop", currentDatacenter->instanceNum, currentDatacenter->datacenterId);
+        cleanupHandshake();
+        return;
+    }
+    handshakeRetries++;
+    if (LOGS_ENABLED) DEBUG_D("account%u dc%u handshake: begin (retry %d), type = %d", currentDatacenter->instanceNum, currentDatacenter->datacenterId, handshakeRetries, handshakeType);
     cleanupHandshake();
     Connection *connection = getConnection();
     handshakeState = 1;
