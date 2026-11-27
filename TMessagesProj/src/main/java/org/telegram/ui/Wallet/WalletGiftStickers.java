@@ -442,7 +442,7 @@ final class WalletGiftStickers extends View {
     }
 
     private boolean allowed(Sticker s) {
-        return s != null && s.nft != null && s.nft.gift != null;
+        return s != null && s.nft != null && s.nft.gift instanceof TL_stars.TL_starGiftUnique;
     }
 
     private boolean colorAllowed(Sticker s) {

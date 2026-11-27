@@ -4396,7 +4396,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
         this.slug = slug;
         this.slugStarGift = gift;
         this.giftsList = list;
-        this.resale = gift.resell_amount != null && !isMine(currentAccount, DialogObject.getPeerDialogId(gift.owner_id));
+        this.resale = gift.resell_amount != null && gift.owner_id != null && !isMine(currentAccount, DialogObject.getPeerDialogId(gift.owner_id));
 
         if (!rolling && roller != null && roller.isRolling() && roller.rollingGift != null && roller.rollingGift.id != gift.id) {
             roller.detach();
