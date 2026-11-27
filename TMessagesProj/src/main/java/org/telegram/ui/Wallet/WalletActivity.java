@@ -3628,42 +3628,120 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
 
     private View createStarsWalletCard(Context context) {
         FrameLayout root = new FrameLayout(context);
+        
+        // Luxury gold gradient
         GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{0xFFFFE082, 0xFFFFB300, 0xFFF57C00});
-        bg.setCornerRadius(dp(18));
+                new int[]{0xFFFFD700, 0xFFDAA520, 0xFFB8860B, 0xFF8B7355});
+        bg.setCornerRadii(new float[]{dp(20), dp(20), dp(20), dp(20), dp(20), dp(20), dp(20), dp(20)});
         root.setBackground(bg);
         int pad = dp(18);
         root.setPadding(pad, pad, pad, pad);
+        root.setElevation(dp(8));
 
+        // Animated shine sweep
+        android.view.View shine = new android.view.View(context) {
+            float shineX = -1;
+            android.graphics.Paint paint = new android.graphics.Paint();
+            
+            @Override
+            protected void onDraw(android.graphics.Canvas canvas) {
+                super.onDraw(canvas);
+                if (shineX > getWidth() + 200) shineX = -200;
+                android.graphics.LinearGradient lg = new android.graphics.LinearGradient(
+                    shineX - 100, 0, shineX + 100, 0,
+                    0x00FFFFFF, 0x44FFFFFF, android.graphics.Shader.TileMode.CLAMP);
+                paint.setShader(lg);
+                canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
+                shineX += 6;
+                postInvalidateDelayed(30);
+            }
+        };
+        root.addView(shine, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+        // Star icon with glow
+        TextView starIcon = new TextView(context);
+        starIcon.setText("\u2605");
+        starIcon.setTextColor(0xFFFFFACD);
+        starIcon.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 52);
+        starIcon.setGravity(Gravity.CENTER);
+        starIcon.setShadowLayer(dp(12), 0, 0, 0xFFFFD700);
+        root.addView(starIcon, LayoutHelper.createFrame(dp(65), dp(65), Gravity.TOP | Gravity.RIGHT, 0, dp(6), dp(10), 0));
+
+        // Gentle pulse animation
+        starIcon.post(new Runnable() {
+            boolean expand = true;
+            @Override
+            public void run() {
+                starIcon.animate()
+                    .scaleX(expand ? 1.08f : 1f)
+                    .scaleY(expand ? 1.08f : 1f)
+                    .setDuration(1200)
+                    .withEndAction(() -> {
+                        expand = !expand;
+                        starIcon.post(this);
+                    })
+                    .start();
+            }
+        });
+
+        // Label with style
         TextView label = new TextView(context);
-        label.setText("ЗВЁЗДЫ");
-        label.setTextColor(0xAA3E2723);
-        label.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        label.setText("\u0417\u0412\u0415\u0417\u0414\u042B");
+        label.setTextColor(0x773E2723);
+        label.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
         label.setTypeface(android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD));
-        root.addView(label, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT));
+        label.setLetterSpacing(0.3f);
+        root.addView(label, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 0, dp(2), 0, 0));
 
+        // Main balance
         TextView value = new TextView(context);
         value.setTextColor(0xFFFFFFFF);
-        value.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
+        value.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 36);
         value.setTypeface(android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD));
-        value.setShadowLayer(dp(2), 0, dp(1), 0x66000000);
-        root.addView(value, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 0, dp(12), 0, 0));
+        value.setShadowLayer(dp(4), 0, dp(2), 0x99000000);
+        root.addView(value, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 0, 0, 0, dp(2)));
         starsCardBalanceView = value;
 
-        TextView touch = new TextView(context);
-        touch.setText("★");
-        touch.setTextColor(0xFFFFFFFF);
-        touch.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
-        touch.setGravity(Gravity.CENTER);
-        root.addView(touch, LayoutHelper.createFrame(dp(52), dp(52), Gravity.TOP | Gravity.RIGHT));
+        // Subtitle
+        TextView subtitle = new TextView(context);
+        subtitle.setText("\u2728 \u0411\u0430\u043B\u0430\u043D\u0441 \u0437\u0432\u0451\u0437\u0434 \u2728");
+        subtitle.setTextColor(0xBBFFFFFF);
+        subtitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
+        subtitle.setLetterSpacing(0.1f);
+        root.addView(subtitle, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 0, 0, 0, dp(32)));
 
+        // Action hint
+        TextView hint = new TextView(context);
+        hint.setText("\u25B6 \u041D\u0430\u0436\u043C\u0438 \u0434\u043B\u044F \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439");
+        hint.setTextColor(0x88FFFFFF);
+        hint.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 9);
+        root.addView(hint, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.RIGHT, 0, 0, 0, dp(4)));
+
+        // Click with animation
         root.setOnClickListener(v -> {
+            v.animate().scaleX(0.93f).scaleY(0.93f).setDuration(100)
+                .withEndAction(() -> v.animate().scaleX(1f).scaleY(1f).setDuration(150)
+                    .setInterpolator(new android.view.animation.OvershootInterpolator(2f))
+                    .start()).start();
             try {
                 presentFragment(new org.telegram.ui.Stars.StarsIntroActivity());
             } catch (Throwable e) {
                 android.util.Log.e("Litgram", "stars card open failed", e);
             }
         });
+
+        // Decorative sparkles
+        for (int i = 0; i < 8; i++) {
+            TextView sparkle = new TextView(context);
+            sparkle.setText(i % 2 == 0 ? "\u2726" : "\u2727");
+            sparkle.setTextColor(0x33FFFFFF);
+            sparkle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 6 + (i * 2));
+            float angle = (float)(Math.PI * 2 * i / 8);
+            int x = (int)(Math.cos(angle) * 80);
+            int y = (int)(Math.sin(angle) * 40);
+            root.addView(sparkle, LayoutHelper.createFrame(dp(20), dp(20), Gravity.CENTER, x, y, 0, 0));
+        }
+
         return root;
     }
 
