@@ -4548,8 +4548,16 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
     }
 
     public void set(TL_stars.TL_starGiftUnique gift, boolean refunded, TLObject fromObject, TLRPC.TL_textWithEntities message) {
-        final long owner_id = DialogObject.getPeerDialogId(gift.owner_id);
-        final long host_id = DialogObject.getPeerDialogId(gift.host_id);
+        try {
+            setInternal(gift, refunded, fromObject, message);
+        } catch (Throwable e) {
+            android.util.Log.e("Litgram", "StarGiftSheet.set failed", e);
+        }
+    }
+
+    private void setInternal(TL_stars.TL_starGiftUnique gift, boolean refunded, TLObject fromObject, TLRPC.TL_textWithEntities message) {
+        final long owner_id = gift.owner_id == null ? 0 : DialogObject.getPeerDialogId(gift.owner_id);
+        final long host_id = gift.host_id == null ? 0 : DialogObject.getPeerDialogId(gift.host_id);
 
         title = gift.title + " #" + LocaleController.formatNumber(gift.num, ',');
 

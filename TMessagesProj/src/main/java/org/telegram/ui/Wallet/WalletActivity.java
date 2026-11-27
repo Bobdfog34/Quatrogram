@@ -3636,6 +3636,7 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
         root.setBackground(bg);
         int pad = dp(18);
         root.setPadding(pad, pad, pad, pad);
+        root.setMinimumHeight(dp(170));
         root.setElevation(dp(8));
 
         // Animated shine sweep
@@ -3763,10 +3764,10 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
         // Keep a stable item even when empty, so visibility changes animate its
         // height instead of inserting/removing rows and shifting adapter positions.
         items.add(UItem.asCustomShadow(walletTopPanelContainer));
-        cardItemPosition = items.size();
-        items.add(UItem.asCustomShadow(cardShadowView, true));
         updateStarsCard();
         items.add(UItem.asCustomShadow(starsCardView));
+        cardItemPosition = items.size();
+        items.add(UItem.asCustomShadow(cardShadowView, true));
         items.add(UItem.asCustomShadow(buttonsContainer));
         showingLearnCells = shouldShowLearnCells();
         if (showingLearnCells) {
