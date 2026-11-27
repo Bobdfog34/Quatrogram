@@ -3024,7 +3024,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             canvas.restore();
         }
 
-        if (hasStarGiftLayout()) {
+        if (hasStarGiftLayout() && org.telegram.ui.LitgramTheme.nftBubblesEnabled()) {
             canvas.save();
             canvas.translate(starGiftLayoutX = (getWidth() - starGiftLayout.getWidth()) / 2.0f, starGiftLayoutY = starGiftLayout.repost ? dp(4) : textY + textHeight + dp(4 + 6 + 6));
             starGiftLayout.draw(canvas);
