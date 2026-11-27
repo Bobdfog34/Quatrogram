@@ -3818,7 +3818,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         };
         sharedMediaLayout.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT));
 //        sharedMediaLayout.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-        if (userId == 0 || imageUpdater == null || myProfile) {
+        if (userId != 0) {
             musicView = new ProfileMusicView(context, resourcesProvider);
             balanceView = new ProfileBalanceView(context, resourcesProvider);
             musicView.setTrailingView(balanceView);
@@ -10920,7 +10920,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         channelBalanceRow = -1;
         balanceDividerRow = -1;
         hasMusic = false;
-        hasBalance = userId != 0 && (imageUpdater == null || myProfile);
+        hasBalance = userId != 0;
         if (hasBalance) {
             if (userInfo == null) {
                 userInfo = new TLRPC.TL_userFull();
