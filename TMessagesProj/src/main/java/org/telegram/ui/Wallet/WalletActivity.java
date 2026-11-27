@@ -168,6 +168,8 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
     private static Typeface walletAddressTypeface;
 
     private WalletCardComponent card;
+    private View starsCardView;
+    private TextView starsCardBalanceView;
     private View cardShadowView;
     private int cardItemPosition;
     private FrameLayout cardLayer;
@@ -678,6 +680,7 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
         cardLayer.setClipToPadding(false);
         cardLayer.addView(card, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         nestedLayout.addView(cardLayer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        starsCardView = createStarsWalletCard(context);
 
         listView.setClipChildren(false);
         listView.setClipToPadding(false);
@@ -2439,10 +2442,14 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
         if (context == null) return;
         if (initialTransaction.peer instanceof TL_wallet.walletTransactionPeerTelegramGift && initialTransaction.nft != null && initialTransaction.nft.gift instanceof TL_stars.TL_starGiftUnique) {
             final TL_stars.TL_starGiftUnique gift = (TL_stars.TL_starGiftUnique) initialTransaction.nft.gift;
-            new StarGiftSheet(context, currentAccount, 0, resourceProvider)
-                .setWalletTransaction(initialTransaction)
-                .set(gift.slug, gift, null)
-                .show();
+            try {
+                new StarGiftSheet(context, currentAccount, 0, resourceProvider)
+                    .setWalletTransaction(initialTransaction)
+                    .set(gift.slug, gift, null)
+                    .show();
+            } catch (Throwable e) {
+                android.util.Log.e("Litgram", "gift transaction sheet failed", e);
+            }
             return;
         }
 
@@ -3619,6 +3626,58 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
         walletTopPanel.setViewVisible(gramEarningsButton, showEarnings, animated);
     }
 
+    private View createStarsWalletCard(Context context) {
+        FrameLayout root = new FrameLayout(context);
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{0xFFFFE082, 0xFFFFB300, 0xFFF57C00});
+        bg.setCornerRadius(dp(18));
+        root.setBackground(bg);
+        int pad = dp(18);
+        root.setPadding(pad, pad, pad, pad);
+
+        TextView label = new TextView(context);
+        label.setText("ЗВЁЗДЫ");
+        label.setTextColor(0xAA3E2723);
+        label.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        label.setTypeface(android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD));
+        root.addView(label, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT));
+
+        TextView value = new TextView(context);
+        value.setTextColor(0xFFFFFFFF);
+        value.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
+        value.setTypeface(android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD));
+        value.setShadowLayer(dp(2), 0, dp(1), 0x66000000);
+        root.addView(value, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 0, dp(12), 0, 0));
+        starsCardBalanceView = value;
+
+        TextView touch = new TextView(context);
+        touch.setText("★");
+        touch.setTextColor(0xFFFFFFFF);
+        touch.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
+        touch.setGravity(Gravity.CENTER);
+        root.addView(touch, LayoutHelper.createFrame(dp(52), dp(52), Gravity.TOP | Gravity.RIGHT));
+
+        root.setOnClickListener(v -> {
+            try {
+                presentFragment(new org.telegram.ui.Stars.StarsIntroActivity());
+            } catch (Throwable e) {
+                android.util.Log.e("Litgram", "stars card open failed", e);
+            }
+        });
+        return root;
+    }
+
+    private void updateStarsCard() {
+        if (starsCardBalanceView == null) return;
+        try {
+            org.telegram.tgnet.tl.TL_stars.StarsAmount balance =
+                    org.telegram.ui.Stars.StarsController.getInstance(currentAccount).getBalance();
+            starsCardBalanceView.setText(org.telegram.ui.Stars.StarsIntroActivity.formatStarsAmountString(balance));
+        } catch (Throwable e) {
+            starsCardBalanceView.setText("0");
+        }
+    }
+
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         final GramWallet wallet = GramWallet.getInstance(currentAccount);
@@ -3628,6 +3687,8 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
         items.add(UItem.asCustomShadow(walletTopPanelContainer));
         cardItemPosition = items.size();
         items.add(UItem.asCustomShadow(cardShadowView, true));
+        updateStarsCard();
+        items.add(UItem.asCustomShadow(starsCardView));
         items.add(UItem.asCustomShadow(buttonsContainer));
         showingLearnCells = shouldShowLearnCells();
         if (showingLearnCells) {
@@ -3886,7 +3947,12 @@ public class WalletActivity extends UniversalFragment implements NotificationCen
                     }
                 });
             }
-            showDialog(sheet.set(gift.slug, gift, null));
+            try {
+                showDialog(sheet.set(gift.slug, gift, null));
+            } catch (Throwable e) {
+                android.util.Log.e("Litgram", "openWalletCollectible failed", e);
+                android.widget.Toast.makeText(getContext(), "Не удалось открыть подарок", android.widget.Toast.LENGTH_SHORT).show();
+            }
         } else {
             openCollectibleSheet(getContext(), nft, getResourceProvider());
         }

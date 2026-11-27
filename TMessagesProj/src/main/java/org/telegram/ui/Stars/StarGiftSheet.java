@@ -4390,6 +4390,9 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
     }
 
     public StarGiftSheet set(String slug, TL_stars.TL_starGiftUnique gift, StarsController.IGiftsList list) {
+        if (gift == null) {
+            return this;
+        }
         this.slug = slug;
         this.slugStarGift = gift;
         this.giftsList = list;

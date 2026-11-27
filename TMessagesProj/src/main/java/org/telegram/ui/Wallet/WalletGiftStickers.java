@@ -500,7 +500,20 @@ final class WalletGiftStickers extends View {
     }
 
     void sync(GramWallet.CollectiblesList list) {
-        for (TL_wallet.nftItem nft : list.collectibles) if (nft.gift != null) ensure(nft);
+        for (TL_wallet.nftItem nft : list.collectibles) {
+            if (nft.gift == null) continue;
+            final Sticker s = ensure(nft);
+            if (s.state == GRID && allowed(s)) {
+                android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
+                h.postDelayed(() -> {
+                    try {
+                        if (isAttachedToWindow() && geometry() && s.state == GRID && allowed(s)) {
+                            toss(s);
+                        }
+                    } catch (Throwable ignore) {}
+                }, 450);
+            }
+        }
         boolean removed = false;
         for (java.util.Iterator<Sticker> it = stickers.values().iterator(); it.hasNext(); ) {
             final Sticker s = it.next();
