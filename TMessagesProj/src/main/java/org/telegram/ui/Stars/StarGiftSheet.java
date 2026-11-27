@@ -6167,6 +6167,17 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
 
     @Override
     public void show() {
+        try {
+            showInternal();
+        } catch (Throwable e) {
+            android.util.Log.e("Litgram", "StarGiftSheet.show failed", e);
+            try {
+                android.widget.Toast.makeText(getContext(), "Не удалось открыть подарок", android.widget.Toast.LENGTH_SHORT).show();
+            } catch (Throwable ignore) {}
+        }
+    }
+
+    private void showInternal() {
         if (MessagesController.getInstance(currentAccount).isFrozen()) {
             AccountFrozenAlert.show(currentAccount);
             return;

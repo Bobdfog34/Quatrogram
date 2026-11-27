@@ -2,8 +2,8 @@ package org.telegram.ui;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import org.telegram.messenger.ApplicationLoader;
@@ -27,16 +27,6 @@ public class ClientSettingsActivity extends BaseFragment {
     private static final String KEY_NFT_RUB = "nftRub";
     private static final String KEY_CARD_CUSTOM = "cardCustom";
 
-
-    private TextCheckCell nftGiftsCell;
-    private TextCheckCell redThemeCell;
-    private TextCheckCell glassCell;
-    private TextCheckCell outlineCell;
-    private TextCheckCell outlineColorCell;
-    private TextCheckCell starsCardCell;
-    private TextCheckCell nftPriceCell;
-    private TextCheckCell cardCustomCell;
-
     public ClientSettingsActivity() {
         super(null);
     }
@@ -47,11 +37,39 @@ public class ClientSettingsActivity extends BaseFragment {
         return true;
     }
 
+    private boolean pref(String key, boolean def) {
+        try {
+            return ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(key, def);
+        } catch (Throwable ignore) {
+            return def;
+        }
+    }
+
+    private void save(String key, boolean value) {
+        try {
+            ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(key, value).apply();
+        } catch (Throwable ignore) {}
+    }
+
+    private TextCheckCell addToggle(LinearLayout root, Context context, String title, String subtitle, String key, boolean def) {
+        TextCheckCell cell = new TextCheckCell(context);
+        cell.setTextAndValue(title, subtitle, false, false);
+        cell.setChecked(pref(key, def));
+        cell.setOnClickListener(v -> {
+            boolean checked = !cell.isChecked();
+            cell.setChecked(checked);
+            save(key, checked);
+            Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
+        });
+        root.addView(cell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 56));
+        return cell;
+    }
+
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(LocaleController.getString(R.string.ClientSettings));
+        actionBar.setTitle("Кастом-настройки Litgram");
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -61,123 +79,30 @@ public class ClientSettingsActivity extends BaseFragment {
             }
         });
 
-        fragmentView = new LinearLayout(context);
-        ((LinearLayout) fragmentView).setOrientation(LinearLayout.VERTICAL);
+        ScrollView scroll = new ScrollView(context);
+        scroll.setFillViewport(true);
+        LinearLayout root = new LinearLayout(context);
+        root.setOrientation(LinearLayout.VERTICAL);
+        scroll.addView(root, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 51));
 
-        nftGiftsCell = new TextCheckCell(context);
-        nftGiftsCell.setTextAndValue(LocaleController.getString(R.string.ClientSettingsNFTGifts), LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo), false, false);
-        nftGiftsCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NFT_BUBBLES, true));
-        nftGiftsCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nftGiftsCell.setChecked(!nftGiftsCell.isChecked());
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_NFT_BUBBLES, nftGiftsCell.isChecked()).apply();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(nftGiftsCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
+        TextInfoPrivacyCell header = new TextInfoPrivacyCell(context);
+        header.setText("Настройки оформления и функций Litgram. После изменения перезапустите приложение.");
+        root.addView(header, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 12, 0, 8));
 
-        redThemeCell = new TextCheckCell(context);
-        redThemeCell.setTextAndValue("Красная тема Litgram", "Красный и чёрный дизайн", false, false);
-        redThemeCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_RED_THEME, true));
-        redThemeCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = !redThemeCell.isChecked();
-                redThemeCell.setChecked(checked);
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_RED_THEME, checked).apply();
-                Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(redThemeCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
+        addToggle(root, context, "Красная тема Litgram", "Красный и чёрный дизайн", KEY_RED_THEME, true);
+        addToggle(root, context, "Жидкое стекло", "Прозрачные панели", KEY_LIQUID_GLASS, true);
+        addToggle(root, context, "Обводка сообщений", "Цветная рамка сообщений", KEY_MESSAGE_OUTLINE, true);
+        addToggle(root, context, "Цвет обводки", "Вкл — красный, выкл — синий", KEY_OUTLINE_COLOR, true);
+        addToggle(root, context, "Звёзды картой", "Показывать звёзды как карту", KEY_STARS_CARD, true);
+        addToggle(root, context, "Цена NFT в рублях", "Стоимость подарка в ₽", KEY_NFT_RUB, true);
+        addToggle(root, context, "Кастомизация карт", "Фон и NFT-стикеры", KEY_CARD_CUSTOM, true);
+        addToggle(root, context, "NFT-пузыри", "Показывать NFT в чатах", KEY_NFT_BUBBLES, true);
 
-        glassCell = new TextCheckCell(context);
-        glassCell.setTextAndValue("Жидкое стекло", "Прозрачные панели", false, false);
-        glassCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_LIQUID_GLASS, true));
-        glassCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = !glassCell.isChecked();
-                glassCell.setChecked(checked);
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_LIQUID_GLASS, checked).apply();
-                Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(glassCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
+        TextInfoPrivacyCell footer = new TextInfoPrivacyCell(context);
+        footer.setText("Litgram — кастомизируйте приложение под себя.");
+        root.addView(footer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 12, 0, 16));
 
-        outlineCell = new TextCheckCell(context);
-        outlineCell.setTextAndValue("Обводка сообщений", "Цветная рамка сообщений", false, false);
-        outlineCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_MESSAGE_OUTLINE, true));
-        outlineCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = !outlineCell.isChecked();
-                outlineCell.setChecked(checked);
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_MESSAGE_OUTLINE, checked).apply();
-                Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(outlineCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
-
-        outlineColorCell = new TextCheckCell(context);
-        outlineColorCell.setTextAndValue("Цвет обводки", "Красный / синий / зелёный", false, false);
-        outlineColorCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_OUTLINE_COLOR, false));
-        outlineColorCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = !outlineColorCell.isChecked();
-                outlineColorCell.setChecked(checked);
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_OUTLINE_COLOR, checked).apply();
-                Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(outlineColorCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
-
-        starsCardCell = new TextCheckCell(context);
-        starsCardCell.setTextAndValue("Звёзды картой", "Показывать звёзды как карту", false, false);
-        starsCardCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_STARS_CARD, true));
-        starsCardCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = !starsCardCell.isChecked();
-                starsCardCell.setChecked(checked);
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_STARS_CARD, checked).apply();
-                Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(starsCardCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
-
-        nftPriceCell = new TextCheckCell(context);
-        nftPriceCell.setTextAndValue("Цена NFT в рублях", "Показывать стоимость подарка в ₽", false, false);
-        nftPriceCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_NFT_RUB, true));
-        nftPriceCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = !nftPriceCell.isChecked();
-                nftPriceCell.setChecked(checked);
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_NFT_RUB, checked).apply();
-                Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(nftPriceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
-
-        cardCustomCell = new TextCheckCell(context);
-        cardCustomCell.setTextAndValue("Кастомизация карт", "Фон и NFT-стикеры", false, false);
-        cardCustomCell.setChecked(ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_CARD_CUSTOM, true));
-        cardCustomCell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = !cardCustomCell.isChecked();
-                cardCustomCell.setChecked(checked);
-                ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_CARD_CUSTOM, checked).apply();
-                Toast.makeText(context, "Перезапустите Litgram, чтобы применить", Toast.LENGTH_SHORT).show();
-            }
-        });
-        ((LinearLayout) fragmentView).addView(cardCustomCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 64));
-
-        TextInfoPrivacyCell infoCell = new TextInfoPrivacyCell(context);
-        infoCell.setText(LocaleController.getString(R.string.ClientSettingsNFTGiftsInfo));
-        ((LinearLayout) fragmentView).addView(infoCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 20, 0, 0));
-
+        fragmentView = scroll;
         return fragmentView;
     }
 
