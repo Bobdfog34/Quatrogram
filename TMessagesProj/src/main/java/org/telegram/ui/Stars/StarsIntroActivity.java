@@ -5493,7 +5493,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     subPriceView.setText("");
                 } else {
                     subPriceView.animate().alpha(1f).start();
-                    subPriceView.setText("≈" + BillingController.getInstance().formatCurrency((long) (input_stars / 1000.0 * MessagesController.getInstance(UserConfig.selectedAccount).starsUsdWithdrawRate1000), "USD"));
+                    subPriceView.setText(org.telegram.ui.LitgramPrices.starsToRubApprox(input_stars));
                 }
             }
         });

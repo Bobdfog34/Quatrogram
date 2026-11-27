@@ -1707,9 +1707,14 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             final TLRPC.TL_messageActionStarGift action = (TLRPC.TL_messageActionStarGift) currentMessageObject.messageOwner.action;
             if (action.forceIn) return;
 //            StarsIntroActivity.showActionGiftSheet(getContext(), currentAccount, currentMessageObject.getDialogId(), currentMessageObject.isOutOwner(), currentMessageObject.messageOwner.date, currentMessageObject.getId(), action, themeDelegate);
-            new StarGiftSheet(getContext(), currentAccount, currentMessageObject.getDialogId(), themeDelegate)
-                .set(currentMessageObject)
-                .show();
+            try {
+                new StarGiftSheet(getContext(), currentAccount, currentMessageObject.getDialogId(), themeDelegate)
+                    .set(currentMessageObject)
+                    .show();
+            } catch (Throwable e) {
+                android.util.Log.e("Litgram", "gift sheet failed", e);
+                android.widget.Toast.makeText(getContext(), "Не удалось открыть подарок", android.widget.Toast.LENGTH_SHORT).show();
+            }
         } else if (currentMessageObject.messageOwner.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
             final TLRPC.TL_messageActionStarGiftUnique action = (TLRPC.TL_messageActionStarGiftUnique) currentMessageObject.messageOwner.action;
             if (action.gift.burned) {
@@ -1720,9 +1725,14 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                     .show();
                 return;
             }
-            new StarGiftSheet(getContext(), currentAccount, currentMessageObject.getDialogId(), themeDelegate)
-                .set(currentMessageObject)
-                .show();
+            try {
+                new StarGiftSheet(getContext(), currentAccount, currentMessageObject.getDialogId(), themeDelegate)
+                    .set(currentMessageObject)
+                    .show();
+            } catch (Throwable e) {
+                android.util.Log.e("Litgram", "unique gift sheet failed", e);
+                android.widget.Toast.makeText(getContext(), "Не удалось открыть подарок", android.widget.Toast.LENGTH_SHORT).show();
+            }
         } else if (currentMessageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatTheme) {
             TLRPC.TL_messageActionSetChatTheme action = (TLRPC.TL_messageActionSetChatTheme) currentMessageObject.messageOwner.action;
             if (action.theme instanceof TLRPC.TL_chatThemeUniqueGift) {
