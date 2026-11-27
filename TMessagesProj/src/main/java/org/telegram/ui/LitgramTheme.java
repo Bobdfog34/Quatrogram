@@ -6,9 +6,9 @@ import android.util.SparseIntArray;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.ui.ActionBar.Theme;
 
-public class QuatrogramTheme {
+public class LitgramTheme {
 
-    public static final String PREFS = "quatrogram";
+    public static final String PREFS = "litgram";
     public static final String KEY_RED_THEME = "redTheme";
     public static final int RED = 0xFFE53935;
     public static final int RED_TEXT = 0xFFD32F2F;

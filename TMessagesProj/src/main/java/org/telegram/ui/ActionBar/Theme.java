@@ -6178,7 +6178,7 @@ public class Theme {
         applyCalculatedTableColors(currentColorsNoAccent, colors, currentTheme.isDark());
         applyCalculatedArticleCodeColors(currentColorsNoAccent, colors, currentTheme.isDark());
         shouldDrawGradientIcons = gradientIcons;
-        org.telegram.ui.QuatrogramTheme.apply(colors, currentTheme.isDark());
+        org.telegram.ui.LitgramTheme.apply(colors, currentTheme.isDark());
         currentColors = colors;
         if (!messages) {
             boolean async = !(LaunchActivity.getLastFragment() instanceof ChatActivity);

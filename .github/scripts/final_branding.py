@@ -10,20 +10,21 @@ import re
 from pathlib import Path
 
 ROOT = Path('.')
-APP_NAME = os.environ.get('APP_DISPLAY_NAME', 'Quatrogram')
+APP_NAME = os.environ.get('APP_DISPLAY_NAME', 'Litgram')
 
 PAIRS = [
-    ('telegram.org', 'quatrogram.net'),
-    ('Telegram.org', 'Quatrogram.net'),
-    ('telegram.me', 'quatrogram.net'),
-    ('telegram.dog', 'quatrogram.net'),
-    ('t.me', 'quatrogram.net'),
-    ('telesrv.net', 'quatrogram.net'),
+    ('telegram.org', 'litgram.net'),
+    ('Telegram.org', 'Litgram.net'),
+    ('telegram.me', 'litgram.net'),
+    ('telegram.dog', 'litgram.net'),
+    ('t.me', 'litgram.net'),
+    ('telesrv.net', 'litgram.net'),
     ('Telesrv', APP_NAME),
     ('telesrv', APP_NAME.lower()),
     ('TELEGRAM', APP_NAME.upper()),
     ('Telegram', APP_NAME),
     ('telegram', APP_NAME.lower()),
+    ('TELEGRAM', APP_NAME.upper()),
 ]
 
 RES_DIRS = list(ROOT.glob('TMessagesProj*/src/main/res'))
@@ -33,6 +34,10 @@ JAVA_DIRS = list(ROOT.glob('TMessagesProj*/src/main/java'))
 def brand_value(value):
     for old, new in PAIRS:
         value = value.replace(old, new)
+    # emoji status / premium status strings
+    value = value.replace("Emoji Status", "Status")
+    value = value.replace("emoji status", "status")
+    value = value.replace("Set Emoji Status", "Set Status")
     return value
 
 

@@ -50,7 +50,7 @@ jobs:
       - name: Final branding cleanup (Telegram -> Quatrogram)
         run: python3 .github/scripts/final_branding.py
         env:
-          APP_DISPLAY_NAME: Quatrogram
+          APP_DISPLAY_NAME: Litgram
 
       - name: Quatrogram feature strings
         run: python3 .github/scripts/quatrogram_features.py
